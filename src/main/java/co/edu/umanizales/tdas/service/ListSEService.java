@@ -12,18 +12,15 @@ public class ListSEService {
 
     private ListSE kids;
 
-    public ListSEService(){
+    public ListSEService() {
         kids=new ListSE();
-        kids = new ListSE();
-        kids.add(new Kid("234","samuel",(byte)4,"manizales"));
-        kids.add(new Kid("434","daniel",(byte)5,"manizales"));
-        kids.add(new Kid("534","felipe",(byte)8,"medellin"));
-        kids.addToStart(new Kid("897","Michael",(byte)6,"cali"));
     }
-    public Node getKids(){
-        return kids.getHead();
+    public void invert(){
+        kids.invert();
     }
-
+    public void getAverageAge(){
+        kids.getAverageAge();
+    }
 
 
 }

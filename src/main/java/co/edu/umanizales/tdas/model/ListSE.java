@@ -3,16 +3,16 @@ package co.edu.umanizales.tdas.model;
 import lombok.Data;
 import lombok.Getter;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
 @Getter
 public class ListSE {
     private Node head;
+
+    private int size;
     private List<Kid> kids;
-
-
 
     /*
      Algoritmo de adicionar al final
@@ -49,6 +49,7 @@ public class ListSE {
         else{
             head= new Node(kid);
         }
+        size ++;
     }
     /*
     Adicionar al inicio
@@ -80,22 +81,31 @@ public class ListSE {
  dependiento del lugar en que se encuentre el elemento cambiar al anterior o al siguiente
  borrar el elemento
     */
-    public void deleteByIdentification(String identification){
-        Node current=head;
-        Node prev=null;
 
-        while (current != null && current.getData().getIdentification() !=identification){
-            prev=current;
-            current=current.getNext();
-        }
-        if(current !=null){
-            if(prev == null){
-                head= current.getNext();
-            }else{
-                prev.setNext(current.getNext());
+    //metodo para elimminar por identificacion
+    public void deleteByIdentification(String identification) {
+        Kid kidToRemove = null;
+        for (Kid kid : kids) {
+            if (kid.getIdentification().equals(identification)) {
+                kidToRemove = kid;
+                break;
+            }
+            if (kidToRemove != null) {
+                kids.remove(kidToRemove);
             }
         }
     }
+        public Kid getKidByIdentification(String identification) {
+            for (Kid kid : kids) {
+                if (kid.getIdentification().equals(identification)) {
+                    return kid;
+                }
+            }
+            return null;
+        }
+
+
+        //metodo para añadir por posicion
     public void addByPosition(Kid kid , int position){
         Node newNode= new Node(kid);
         if(position==0){
@@ -110,36 +120,87 @@ public class ListSE {
             current.setNext(newNode);
         }
     }
-    public byte getTotalAges(){
-        byte sum=0;
-        for(Kid kid: kids){
-            sum = (byte) (sum+ kid.getAge());
+    //metodo para calcular el total de las edades
+  public double getAverageAge(){
+        int totalAge=0;
+        int numKids = kids.size();
+        for(Kid kid : kids){
+            totalAge += kid.getAge();
+        }
+        return (double)totalAge/numKids;
+  }
+    //metodo para calcular el total de niños
+
+    public int getTotalKids(){
+        int sum=0;
+        for(Kid kid:kids){
+            sum = sum + getTotalKids();
         }
         return sum;
     }
-
-    public void getTotalKidsByCity() {
-        // el hashmap es una variable que se utiliza para almacenar valores que tengan referencias, como en este caso una ciudad
-        //que va a ir obteniendo un valor
-        HashMap<String, Integer> cityMap = new HashMap<>();
-        for (Kid kid : kids) {
-            String kidCity = kid.getCity();
-            if (kidCity != null) {
-                //el constainsKey se utiliza para verificar si la ciudad ya tiene un valor, si lo tiene se le suma uno
-                if (cityMap.containsKey(kidCity)) {
-                    cityMap.put(kidCity, cityMap.get(kidCity) + 1);
-                    //en este caso si la ciudad es la primera vez que se encuentra se agrega y se iniciliza con un valor 1
-                } else {
-                    cityMap.put(kidCity, 1);
-                }
+    //metodo para intercambiar extremos
+    public void changeExtremes(){
+        if(this.head !=null && this.head.getNext() != null){
+            Node temp = this.head;
+            while(temp.getNext()!= null){
+                temp = temp.getNext();
+            }
+            //temp esta en el ultimo
+            Kid copy = this.head.getData();
+            this.head.setData(temp.getData());
+            temp.setData(copy);
+        }
+    }
+    public void invert(){
+        if(this.head != null){
+            ListSE listCp= new ListSE();
+            Node temp = this.head;
+            while(temp!= null){
+                listCp.addToStart(temp.getData());
+                temp = temp.getNext();
             }
         }
-
-        if (cityMap.containsKey(city)) {
-            int count = cityMap.get(city);
-            System.out.println("Total kids in " + city + ": " + count);
-        } else {
-            System.out.println("No kids found in " + city);
+    }
+    public void orderBoyToStart(){
+        if(this.head != null){
+            ListSE listCp = new ListSE();
+            Node temp = this.head;
+            while(temp != null){
+                if(temp.getData().getGender()=='M'){
+                    listCp.addToStart(temp.getData());
+                }
+                else {
+                    listCp.add(temp.getData());
+                }
+                temp= temp.getNext();
+            }
+            this.head = listCp.getHead();
         }
+    }
+    public int getCountKidsByLocation(String code){
+        int count =0;
+        if(this.head !=null){
+            Node temp= this.head;
+            while (temp != null){
+                if(temp.getData().getLocation().getCode().equals(code)){
+                    count++;
+                }
+                temp = temp.getNext();
+            }
+        }
+        return count;
+    }
+    public int getCountKidsByDeptoCode(String code){
+        int count =0;
+        if( this.head!=null){
+            Node temp = this.head;
+            while(temp != null){
+                if(temp.getData().getLocation().getCode().substring(0,5).equals(code)){
+                    count++;
+                }
+                temp = temp.getNext();
+            }
+        }
+        return count;
     }
 }

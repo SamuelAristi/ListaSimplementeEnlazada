@@ -2,15 +2,9 @@ package co.edu.umanizales.tdas.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-
 @Data
 @AllArgsConstructor
-public class Kid {
-    private String identification;
+public class Location {
+    private String code;
     private String name;
-    private byte age;
-    private char gender;
-    private Location location;
-
-
 }
