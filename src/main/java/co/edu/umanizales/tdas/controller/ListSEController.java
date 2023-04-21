@@ -60,14 +60,15 @@ public class ListSEController {
         return new ResponseEntity<>(new ResponseDTO(200,"se ha invertido la lista",null),HttpStatus.OK);
     }
 
-    @PostMapping
+
+    @PostMapping(path = "/niño")
     public ResponseEntity<ResponseDTO> addKid(@RequestBody KidDTO kidDTO) {
         // Verificar si ya existe un niño con la misma identificación
         Kid existingKid = listSEService.getKids().getKidByIdentification(kidDTO.getIdentification());
         if (existingKid != null) {
             return new ResponseEntity<>(new ResponseDTO(
-                    409, "Ya existe un niño con la misma identificación",
-                    null), HttpStatus.CONFLICT);
+                    404, "Ya existe un niño con la misma identificación",
+                    null), HttpStatus.BAD_REQUEST);
         }
         // Si no existe, agregar el niño
         Location location = locationService.getLocationByCode(kidDTO.getCodeLocation());
@@ -87,7 +88,7 @@ public class ListSEController {
                 null), HttpStatus.OK);
     }
 
-    @GetMapping(path = "/kidsbylocations")
+        @GetMapping(path = "/kidsbylocations")
     public ResponseEntity<ResponseDTO> getkidsByLocation(){
         List<KidsByLocationDTO> kidsByLocationDTOList = new ArrayList<>();
         for(Location loc : locationService.getLocations()){
@@ -111,6 +112,7 @@ public class ListSEController {
                 200,kidsByLocationDTOList1,
                 null), HttpStatus.OK);
     }
+
 
 }
 

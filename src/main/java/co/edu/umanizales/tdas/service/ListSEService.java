@@ -18,9 +18,5 @@ public class ListSEService {
     public void invert(){
         kids.invert();
     }
-    public void getAverageAge(){
-        kids.getAverageAge();
-    }
-
 
 }
