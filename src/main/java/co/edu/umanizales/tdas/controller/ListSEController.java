@@ -111,6 +111,7 @@ public class  ListSEController {
                 null), HttpStatus.OK);
     }
 
+
     @GetMapping(path = "kidsbyage")
     public ResponseEntity<ResponseDTO> kidsbyage(@PathVariable byte age){
         List<KidsByGendetDTO> kidsByGenderDTOlist = new ArrayList<>();

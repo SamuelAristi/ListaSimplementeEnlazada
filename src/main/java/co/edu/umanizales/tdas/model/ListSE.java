@@ -203,6 +203,7 @@ public class ListSE {
         }
         return count;
     }
+
     public int getCountKidsByCityByAgeBygender(String code,char gender,byte age){
         int count=0;
         if(this.head !=null){
