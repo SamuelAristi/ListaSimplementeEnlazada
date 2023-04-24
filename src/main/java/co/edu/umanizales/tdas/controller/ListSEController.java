@@ -1,8 +1,6 @@
 package co.edu.umanizales.tdas.controller;
 
-import co.edu.umanizales.tdas.controller.dto.KidDTO;
-import co.edu.umanizales.tdas.controller.dto.KidsByLocationDTO;
-import co.edu.umanizales.tdas.controller.dto.ResponseDTO;
+import co.edu.umanizales.tdas.controller.dto.*;
 import co.edu.umanizales.tdas.model.Kid;
 import co.edu.umanizales.tdas.model.Location;
 import co.edu.umanizales.tdas.service.ListSEService;
@@ -17,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(path = "/listse")
-public class ListSEController {
+public class  ListSEController {
     @Autowired
     private ListSEService listSEService;
     @Autowired
@@ -113,6 +111,25 @@ public class ListSEController {
                 null), HttpStatus.OK);
     }
 
+    @GetMapping(path = "kidsbyage")
+    public ResponseEntity<ResponseDTO> kidsbyage(@PathVariable byte age){
+        List<KidsByGendetDTO> kidsByGenderDTOlist = new ArrayList<>();
+        for(Location loc:locationService.getLocations()){
+            if(loc.getCode().length()==8){
+                String nameCity = loc.getName();
+                List<GenderDTO> genderDTOList=new ArrayList<>();
+
+                genderDTOList.add(new GenderDTO('m',listSEService.getKids().getCountKidsByCityByAgeBygender(loc.getCode(),
+                        'm',age)));
+                genderDTOList.add(new GenderDTO('f',listSEService.getKids().getCountKidsByCityByAgeBygender(loc.getCode(),
+                        'f',age)));
+                int  total= genderDTOList.get(0).getQuantity() + genderDTOList.get(1).getQuantity();
+
+                kidsByGenderDTOlist.add(new KidsByGendetDTO(nameCity,genderDTOList,total));
+            }
+        }
+        return new ResponseEntity<>(new ResponseDTO(200,kidsByGenderDTOlist,null),HttpStatus.OK);
+    }
 
 }
 
