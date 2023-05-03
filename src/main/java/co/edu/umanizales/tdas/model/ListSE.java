@@ -1,5 +1,7 @@
 package co.edu.umanizales.tdas.model;
 
+import co.edu.umanizales.tdas.controller.dto.ReportAgeQuantityKidsDTO;
+import co.edu.umanizales.tdas.controller.dto.ReportKidsLocationDTO;
 import lombok.Data;
 import lombok.Getter;
 
@@ -72,72 +74,102 @@ public class ListSE {
         else{
             head= new Node(kid);
         }
+        size++;
     }
-    /*
- metodo de elinar elementos
-
- buscar el elemento que deseamos eliminar
- mirar en que lugar esta posicionado el elemento
- dependiento del lugar en que se encuentre el elemento cambiar al anterior o al siguiente
- borrar el elemento
-    */
-
-    //metodo para elimminar por identificacion
     public void deleteByIdentification(String identification) {
-        Kid kidToRemove = null;
-        for (Kid kid : kids) {
-            if (kid.getIdentification().equals(identification)) {
-                kidToRemove = kid;
-                break;
+        if (head == null) {
+            return;
+        }
+
+        if (head.getData().getIdentification().equals(identification)) {
+            head = head.getNext();
+            return;
+        }
+
+        Node current = head.getNext();
+        Node previous = head;
+
+        while (current != null) {
+            if (current.getData().getIdentification().equals(identification)) {
+                previous.setNext(current.getNext());
+                return;
             }
-            if (kidToRemove != null) {
-                kids.remove(kidToRemove);
-            }
+            previous = current;
+            current = current.getNext();
         }
     }
-        public Kid getKidByIdentification(String identification) {
-            for (Kid kid : kids) {
-                if (kid.getIdentification().equals(identification)) {
-                    return kid;
-                }
-            }
-            return null;
+    public void deleteByAge(int age) {
+        if (head == null) {
+            return;
         }
 
+        while (head != null && head.getData().getAge() == age) {
+            head = head.getNext();
+        }
 
-        //metodo para añadir por posicion
+        Node current = head;
+        Node previous = null;
+
+        while (current != null) {
+            if (current.getData().getAge() == age) {
+                previous.setNext(current.getNext());
+            } else {
+                previous = current;
+            }
+            current = current.getNext();
+        }
+    }
+
+
+    public boolean checkKidByIdentification(String identification) {
+        if (this.head != null) {
+            Node temp = this.head;
+            while (temp != null) {
+                if (temp.getData().getIdentification().equals(identification)) {
+                    return true;
+                }
+                temp = temp.getNext();
+            }
+        }
+        return false;
+    }
+
+    //metodo para añadir por posicion
     public void addByPosition(Kid kid , int position){
         Node newNode= new Node(kid);
-        if(position==0){
-            newNode.setNext(head);
-            head = newNode;
+        if(position<=1){
+           addToStart(kid);
         }else{
             Node current= head;
-            for(int i=0 ; i<position-1;i++){
+            for(int i=1 ; i<position-1;i++){
                 current=current.getNext();
             }
             newNode.setNext(current.getNext());
             current.setNext(newNode);
         }
     }
-    //metodo para calcular el total de las edades
-  public double getAverageAge(){
-        int totalAge=0;
-        int numKids = kids.size();
-        for(Kid kid : kids){
-            totalAge += kid.getAge();
-        }
-        return (double)totalAge/numKids;
-  }
-    //metodo para calcular el total de niños
 
-    public int getTotalKids(){
-        int sum=0;
-        for(Kid kid:kids){
-            sum = sum + getTotalKids();
+
+    public double getAverageAge() {
+        int totalAge = 0;
+        int numKids = 0;
+        Node temp = this.head;
+
+        while (temp != null) {
+            Kid kid = temp.getData();
+            totalAge += kid.getAge();
+            numKids++;
+            temp = temp.getNext();
         }
-        return sum;
+
+        if (numKids > 0) {
+            return (double) totalAge / numKids;
+        } else {
+            return 0.0;
+        }
     }
+
+
     //metodo para intercambiar extremos
     public void changeExtremes(){
         if(this.head !=null && this.head.getNext() != null){
@@ -161,22 +193,92 @@ public class ListSE {
             }
         }
     }
-    public void orderBoyToStart(){
-        if(this.head != null){
+    public void gainPosition(String id, int position, ListSE listSE){
+        if (head != null){
+            Node temp = this.head;
+            int count = 1;
+
+            while (temp != null && ! temp.getData().getIdentification().equals(id)){
+                temp = temp.getNext();
+                count ++;
+            }
+            int newPosition = position-count;
+            Kid listCopy = temp.getData();
+            listSE.deleteByIdentification(temp.getData().getIdentification());
+            listSE.addByPosition(listCopy , newPosition);
+        }
+    }
+
+    public void backPosition(String id, int position, ListSE listSE){
+        if (head != null){
+            Node temp = this.head;
+            int count = 1;
+
+            while (temp != null && ! temp.getData().getIdentification().equals(id)){
+                temp = temp.getNext();
+                count ++;
+            }
+            int newPosition = position+count-1;
+            Kid listCopy = temp.getData();
+            listSE.deleteByIdentification(temp.getData().getIdentification());
+            listSE.addByPosition(listCopy , newPosition);
+        }
+    }
+    public void orderBoysToStart() {
+        if (this.head != null) {
             ListSE listCp = new ListSE();
             Node temp = this.head;
-            while(temp != null){
-                if(temp.getData().getGender()=='M'){
+            while (temp != null) {
+                if (temp.getData().getGender() == 'M') {
                     listCp.addToStart(temp.getData());
-                }
-                else {
+                } else {
                     listCp.add(temp.getData());
                 }
-                temp= temp.getNext();
+
+                temp = temp.getNext();
             }
             this.head = listCp.getHead();
         }
     }
+    public void intercalateByGender() {
+        ListSE boysList = new ListSE();
+        ListSE girlsList = new ListSE();
+
+        Node current = head;
+        while(current != null) {
+            if(current.getData().getGender() == 'M') {
+                boysList.add(current.getData());
+            } else {
+                girlsList.add(current.getData());
+            }
+            current = current.getNext();
+        }
+
+        ListSE combinedList = new ListSE();
+        Node boysCurrent = boysList.getHead();
+        Node girlsCurrent = girlsList.getHead();
+        while(boysCurrent != null && girlsCurrent != null) {
+            combinedList.add(boysCurrent.getData());
+            combinedList.add(girlsCurrent.getData());
+            boysCurrent = boysCurrent.getNext();
+            girlsCurrent = girlsCurrent.getNext();
+        }
+
+        while(boysCurrent != null) {
+            combinedList.add(boysCurrent.getData());
+            boysCurrent = boysCurrent.getNext();
+        }
+
+        while(girlsCurrent != null) {
+            combinedList.add(girlsCurrent.getData());
+            girlsCurrent = girlsCurrent.getNext();
+        }
+
+        head = combinedList.getHead();
+    }
+
+
+
     public int getCountKidsByLocation(String code){
         int count =0;
         if(this.head !=null){
@@ -204,19 +306,27 @@ public class ListSE {
         return count;
     }
 
-    public int getCountKidsByCityByAgeBygender(String code,char gender,byte age){
-        int count=0;
-        if(this.head !=null){
-            Node temp = this.head;
-            while (temp!=null){
-                if(temp.getData().getLocation().getCode().equals(code)
-                        && temp.getData().getGender() == gender && temp.getData().getAge() > age){
-                    count++;
+    public void getReportKidsByLocationByGendersByAge(byte age, ReportKidsLocationDTO report){
+        if(head != null){
+            Node temp=this.head;
+            while(temp != null){
+                 if(temp.getData().getAge()>age){
+                     report.updateQuantity(temp.getData().getLocation().getName(), temp.getData().getGender());
+                 }
+                 temp = temp.getNext();
+            }
+        }
+    }
+public void getReportKidsByAgeByGender(byte age, ReportAgeQuantityKidsDTO report){
+        if(head!= null){
+            Node temp= this.head;
+            while (temp != null){
+                if(temp.getData().getAge()==age){
+                    report.updateQuantity(temp.getData().getAge(),temp.getData().getGender());
                 }
                 temp = temp.getNext();
             }
         }
-        return count;
-    }
+}
 
 }

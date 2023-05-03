@@ -1,19 +1,16 @@
-package co.edu.umanizales.tdas.model;
+package co.edu.umanizales.tdas.controller.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor
-public class Pet {
+public class PetByPositionDTO {
     private String name;
     private String id;
     private String race;
     private Byte age;
     private String color;
     private char gender;
-    private Owner owner;
-    private Location location;
-
-
+    private String codeOwner;
+    private String codelocation;
+    private int position;
 }
