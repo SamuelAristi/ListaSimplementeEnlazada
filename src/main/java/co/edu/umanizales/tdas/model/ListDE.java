@@ -75,6 +75,64 @@ public class ListDE {
         }
     }
 
+    /*ELIMINAR NIÑO POR ID NUEVA VERSION
+
+     verificamoss si la lista tiene elementos:
+     llamo un nodo temporal que va a ser igual al elemento que estoy buscando
+     -si el primer elemento "cabeza" contiene el elemento que deseo eliminar, establecemos el siguiente como la "cabeza",
+     y establecemos en nodo previo de la  nueva cabeza como nulo
+     -si el elemento se enccuentra en otra posicion que no sea cabeza
+           -recorro la lista hasta  encontrar el elemento que deseo eleminar
+           -parado en el elemento que voy a elimiar, a mi previo le digo que tome a mi siguiente, a mi siguiente le digo que
+           tome mi previo
+        si el elemento es el ultimo:
+           -parado en el elemento que voy a eliminar, si su siguiente es nulo significa que es el ultimo elemento de la lista
+           - y el previo de elemento lo suelto, y mi previo lo vuelvo nulo
+    * */
+    public void deletePetByIdTwo(String id) {
+        // Verificamos si la lista tiene elementos
+        if (head == null) {
+            return;
+        }
+        // Creamos un nodo temporal que va a ser igual al elemento que estoy buscando
+        NodeDE temp = new NodeDE(null);
+        temp.getData().setId(id);
+
+        // Si el primer elemento "cabeza" contiene el elemento que deseo eliminar
+        if (head.getData().getId().equals(id)) {
+            // Establecemos el siguiente como la "cabeza" y establecemos el nodo previo de la nueva cabeza como nulo
+            head = head.getNext();
+            if (head != null) {
+                head.setPrev(null);
+            }
+            return;
+        }
+
+        // Recorremos la lista hasta encontrar el elemento que deseamos eliminar
+        NodeDE current = head.getNext();
+        while (current != null) {
+            if (current.getData().getId().equals(id)) {
+                // Si el elemento se encuentra en otra posición que no sea cabeza
+                // A mi previo le digo que tome a mi siguiente, a mi siguiente le digo que tome mi previo
+                current.getPrev().setNext(current.getNext());
+                if (current.getNext() != null) {
+                    current.getNext().setPrev(current.getPrev());
+                } else {
+                    // Si el elemento es el último
+                    // Parado en el elemento que voy a eliminar, si su siguiente es nulo significa que es el último elemento de la lista
+                    // Y el previo de elemento lo suelto, y mi previo lo vuelvo nulo
+                    current.getPrev().setNext(null);
+                    current.setPrev(null);
+                }
+                return;
+            }
+            current = current.getNext();
+        }
+    }
+
+
+
+
 
     public void deletePetById(String id) throws IllegalArgumentException {
         try {
@@ -403,9 +461,6 @@ public class ListDE {
             System.out.println("Error obteniendo reporte: " + e.getMessage());
         }
     }
-
-
-
 
 }
 

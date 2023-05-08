@@ -325,6 +325,11 @@ public class  ListDeController {
             return new ResponseEntity<>(new ResponseDTO(500, "Ha ocurrido un error interno", null), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    @DeleteMapping(path = "/delatebyidtwo")
+    public ResponseEntity<ResponseDTO> deletePetByIdTwo(@PathVariable String id){
+        listDeService.getPets().deletePetByIdTwo(id);
+        return new ResponseEntity<>(new ResponseDTO(200,"la mascota fue eliminada",null),HttpStatus.OK);
+    }
 
 }
 
