@@ -24,7 +24,17 @@ public class  ListDeController {
     private LocationService locationService;
     @Autowired
     private OwnerService ownerService;
-
+    @GetMapping
+    public ResponseEntity<ResponseDTO> getPets(){
+        return new ResponseEntity<>(new ResponseDTO(
+                200, listDeService.getPets().getPets(), null), HttpStatus.OK);
+    }
+    //getPetsPrev
+    @GetMapping(path = "/getpetsprev")
+    public ResponseEntity<ResponseDTO>getPetsPrev(){
+        return new ResponseEntity<>(new ResponseDTO(
+                200, listDeService.getPets().getPetsPrev(), null), HttpStatus.OK);
+    }
     @PostMapping(path = "/addpet")
     public ResponseEntity<ResponseDTO> addPet(@RequestBody PetDTO petDTO) {
         try {
@@ -35,13 +45,13 @@ public class  ListDeController {
             }
 
             // Verificar si el dueño ya existe
-            Owner owner = ownerService.getOwnerById(petDTO.getCodeOwner());
+            Owner owner = ownerService.getOwners().getOwnerById(petDTO.getCodeOwner());
             if (owner == null) {
                 throw new IllegalArgumentException("El dueño no existe");
             }
 
             // Verificar si la localidad ya existe
-            Location location = locationService.getLocationByCode(petDTO.getCodelocation());
+            Location location = locationService.getLocationByCode(petDTO.getCodeLocation());
             if (location == null) {
                 throw new IllegalArgumentException("La localidad no existe");
             }
@@ -78,20 +88,20 @@ public class  ListDeController {
             if (listDeService.getPets().checkPetById(petDTO.getId())) {
                 throw new IllegalArgumentException("Ya existe una mascota con el mismo ID");
             }
-
             // Verificar si el dueño ya existe
-            Owner owner = ownerService.getOwnerById(petDTO.getCodeOwner());
+            Owner owner = ownerService.getOwners().getOwnerById(petDTO.getCodeOwner());
             if (owner == null) {
                 throw new IllegalArgumentException("El dueño no existe");
             }
 
             // Verificar si la localidad ya existe
-            Location location = locationService.getLocationByCode(petDTO.getCodelocation());
+            Location location = locationService.getLocationByCode(petDTO.getCodeLocation());
             if (location == null) {
                 throw new IllegalArgumentException("La localidad no existe");
             }
 
             // Si esta correcto
+
             listDeService.getPets().addToStart(new Pet(
                     petDTO.getName(),
                     petDTO.getId(),
@@ -122,7 +132,7 @@ public class  ListDeController {
             }
 
             // Verificar si el dueño ya existe
-            Owner owner = ownerService.getOwnerById(petByPositionDTO.getCodeOwner());
+            Owner owner = ownerService.getOwners().getOwnerById(petByPositionDTO.getCodeOwner());
             if (owner == null) {
                 throw new IllegalArgumentException("El dueño no existe");
             }
@@ -200,9 +210,9 @@ public class  ListDeController {
     public ResponseEntity<ResponseDTO> changeExtremes() {
         try {
             listDeService.getPets().changeExtremes();
-            return new ResponseEntity<>(new ResponseDTO(200, "Se ha invertido la lista", null), HttpStatus.OK);
+            return new ResponseEntity<>(new ResponseDTO(200, "Se han intercambiado los exrtremos", null), HttpStatus.OK);
         } catch (NullPointerException e) {
-            return new ResponseEntity<>(new ResponseDTO(404, "No hay mascotas en la lista", null), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new ResponseDTO(404, e.getMessage(), null), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(new ResponseDTO(500, "Ha ocurrido un error interno", null), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -325,7 +335,7 @@ public class  ListDeController {
             return new ResponseEntity<>(new ResponseDTO(500, "Ha ocurrido un error interno", null), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @DeleteMapping(path = "/delatebyidtwo")
+    @DeleteMapping(path = "/delatebyidtwo/{id}")
     public ResponseEntity<ResponseDTO> deletePetByIdTwo(@PathVariable String id){
         listDeService.getPets().deletePetByIdTwo(id);
         return new ResponseEntity<>(new ResponseDTO(200,"la mascota fue eliminada",null),HttpStatus.OK);

@@ -1,37 +1,18 @@
 package co.edu.umanizales.tdas.service;
 
 import co.edu.umanizales.tdas.model.Owner;
+import co.edu.umanizales.tdas.model.OwnerList;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @Data
 public class OwnerService {
+    private OwnerList owners;
 
-    private List<Owner> owners;
 
     public OwnerService(){
-         owners = new ArrayList<>();
-    }
-
-    public void addOwner(Owner owner) {
-        owners.add(owner);
-    }
-
-
-
-    public Owner getOwnerById(String id){
-        ;
-        for(Owner own: owners){
-            if(own.getId().equals(id)){
-                return own;
-            }
-        }
-        return null;
-    }
-
+    owners=new OwnerList();}
 
 }

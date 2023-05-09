@@ -32,7 +32,6 @@ public class PetDTO {
     @NotBlank(message = "El campo no puede estar vacío")
     private String codeOwner;
     @NotBlank(message = "El campo no puede estar vacío")
-    private String codelocation;
-
+    private String codeLocation;
 
 }

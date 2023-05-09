@@ -5,6 +5,7 @@ import co.edu.umanizales.tdas.controller.dto.ReportAgeQuantityPetsDTO;
 import co.edu.umanizales.tdas.controller.dto.ReportPetsLocationDTO;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -15,6 +16,32 @@ public class ListDE {
 
     private NodeDE head;
     private int size;
+
+    public List<Pet> getPets(){
+        pets= new ArrayList<>();
+        NodeDE temp= head;
+        pets.add(temp.getData());
+        while (temp.getNext()!=null){
+            temp=temp.getNext();
+            pets.add(temp.getData());
+        }
+        return pets;
+    }
+
+    public List<Pet> getPetsPrev(){
+        pets= new ArrayList<>();
+        NodeDE temp= head;
+        while (temp.getNext()!=null){
+            temp=temp.getNext();
+        }
+        pets.add(temp.getData());
+        while (temp.getPrev()!=null){
+            temp=temp.getPrev();
+            pets.add(temp.getData());
+        }
+        return pets;
+    }
+
 
     public void add(Pet pet) throws IllegalArgumentException {
         try {
@@ -131,40 +158,34 @@ public class ListDE {
     }
 
 
+    public void deletePetById(String id) {
+        if (head != null) {
+            NodeDE temp = head;
 
-
-
-    public void deletePetById(String id) throws IllegalArgumentException {
-        try {
-            Objects.requireNonNull(id, "Pet ID cannot be null");
-
-            if (head == null) {
-                return;
-            }
-            if (head.getData().getId().equals(id)) {
-                head = head.getNext();
-                if (head != null) {
+            if (temp.getData().getId().equalsIgnoreCase(id)) {
+                temp = temp.getNext();
+                head = temp;
+                if (size != 1) {
                     head.setPrev(null);
                 }
-                size--;
-                return;
-            }
-            NodeDE current = head.getNext();
-            while (current != null) {
-                if (current.getData().getId().equals(id)) {
-                    current.getPrev().setNext(current.getNext());
-                    if (current.getNext() != null) {
-                        current.getNext().setPrev(current.getPrev());
+            } else {
+                while (temp.getNext() != null) {
+                    if (temp.getNext().getData().getId().equalsIgnoreCase(id)) {
+                        if (temp.getNext().getNext() != null) {
+                            temp.getNext().getNext().setPrev(temp);
+                        }
+                        temp.setNext(temp.getNext().getNext());
+                        size--;
+                        return;
                     }
-                    size--;
-                    return;
+                    temp = temp.getNext();
                 }
-                current = current.getNext();
             }
-        } catch (NullPointerException e) {
-            throw new IllegalArgumentException("Pet ID cannot be null");
+            size--;
         }
     }
+
+
 
     public void deleteByAge(int age) {
         if (head == null) {
@@ -247,36 +268,32 @@ public class ListDE {
 
 
     public void changeExtremes() {
-        try {
-            if (head == null || head.getNext() == null) {
-                return;
-            }
-            NodeDE temp = head;
-            while (temp.getNext() != null) {
-                temp = temp.getNext();
-            }
-            // temp está en el último nodo
-            NodeDE tempPrev = temp.getPrev();
-            NodeDE tempNext = head.getNext();
-
-            // Actualizar el enlace previo del nodo temporal
-            tempPrev.setNext(null);
-            temp.setPrev(null);
-
-            // Actualizar enlaces del nodo de la cabeza
-            head.setNext(null);
-            head.setPrev(temp);
-            temp.setNext(head);
-
-            // Actualizar enlaces del nodo final
-            tempNext.setPrev(head);
-            tempPrev.setNext(temp);
-
-            // Actualizar la cabeza
-            head = temp;
-        } catch (NullPointerException e) {
-            throw new IllegalArgumentException("El objeto no puede ser vacio");
+        if (head == null || head.getNext() == null) {
+            throw new NullPointerException("El objeto no puede ser vacio");
         }
+        NodeDE temp = head;
+        while (temp.getNext() != null) {
+            temp = temp.getNext();
+        }
+        // temp está en el último nodo
+        NodeDE tempPrev = temp.getPrev();
+        NodeDE tempNext = head.getNext();
+
+        // Actualizar el enlace previo del nodo temporal
+        tempPrev.setNext(null);
+        temp.setPrev(null);
+
+        // Actualizar enlaces del nodo de la cabeza
+        head.setNext(null);
+        head.setPrev(temp);
+        temp.setNext(head);
+
+        // Actualizar enlaces del nodo final
+        tempNext.setPrev(head);
+        tempPrev.setNext(temp);
+
+        // Actualizar la cabeza
+        head = temp;
     }
 
 

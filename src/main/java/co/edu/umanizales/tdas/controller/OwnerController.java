@@ -1,6 +1,8 @@
 package co.edu.umanizales.tdas.controller;
 
+import co.edu.umanizales.tdas.controller.dto.OwnerDTO;
 import co.edu.umanizales.tdas.controller.dto.ResponseDTO;
+import co.edu.umanizales.tdas.model.Location;
 import co.edu.umanizales.tdas.model.Owner;
 import co.edu.umanizales.tdas.service.LocationService;
 import co.edu.umanizales.tdas.service.OwnerService;
@@ -23,11 +25,29 @@ public class OwnerController {
     }
 
     @PostMapping(path = "/addowner")
-    ResponseEntity<ResponseDTO> addOwners(@RequestBody Owner owner) {
-        owmerService.addOwner(owner);
-        return new ResponseEntity<>(new ResponseDTO(200, "El dueño fue agregado", null), HttpStatus.OK);
+    public ResponseEntity<ResponseDTO> addOwner(@RequestBody OwnerDTO ownerDTO) {
+        Location location = locationService.getLocationByCode(ownerDTO.getCodeLocation());
+        if (location == null) {
+            return new ResponseEntity<>(new ResponseDTO(
+                    404, "La ubicación no existe",
+                    null), HttpStatus.OK);
+        }
+        owmerService.getOwners().add(new Owner(
+                ownerDTO.getName(),
+                ownerDTO.getId(),
+                ownerDTO.getContact(),
+                ownerDTO.getGender(),
+                location));
+
+        return new ResponseEntity<>(new ResponseDTO(
+                200, "Se ha adicionado el dueño",
+                null), HttpStatus.OK);
     }
 
-
 }
+
+
+
+
+
 
