@@ -210,13 +210,14 @@ public class  ListDeController {
     public ResponseEntity<ResponseDTO> changeExtremes() {
         try {
             listDeService.getPets().changeExtremes();
-            return new ResponseEntity<>(new ResponseDTO(200, "Se han intercambiado los exrtremos", null), HttpStatus.OK);
+            return new ResponseEntity<>(new ResponseDTO(200, "Se han intercambiado los extremos", null), HttpStatus.OK);
         } catch (NullPointerException e) {
             return new ResponseEntity<>(new ResponseDTO(404, e.getMessage(), null), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(new ResponseDTO(500, "Ha ocurrido un error interno", null), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
 
     @GetMapping(path = "/backposition/{id}/{position}")

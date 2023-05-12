@@ -314,8 +314,6 @@ public class  ListSEController {
                     null), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-
     @GetMapping(path = "reportsagekids/{age}")
     public ResponseEntity<ResponseDTO> getReportsKidsByAgeGender(@PathVariable byte age) {
         try {

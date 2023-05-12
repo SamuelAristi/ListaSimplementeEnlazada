@@ -116,46 +116,39 @@ public class ListDE {
            -parado en el elemento que voy a eliminar, si su siguiente es nulo significa que es el ultimo elemento de la lista
            - y el previo de elemento lo suelto, y mi previo lo vuelvo nulo
     * */
-    public void deletePetByIdTwo(String id) {
-        // Verificamos si la lista tiene elementos
+    public Pet deletePetByIdTwo(String id) {
         if (head == null) {
-            return;
-        }
-        // Creamos un nodo temporal que va a ser igual al elemento que estoy buscando
-        NodeDE temp = new NodeDE(null);
-        temp.getData().setId(id);
-
-        // Si el primer elemento "cabeza" contiene el elemento que deseo eliminar
-        if (head.getData().getId().equals(id)) {
-            // Establecemos el siguiente como la "cabeza" y establecemos el nodo previo de la nueva cabeza como nulo
-            head = head.getNext();
-            if (head != null) {
-                head.setPrev(null);
+            return null;
+        } else {
+            NodeDE current = head;
+            while (current != null && !current.getData().getId().equalsIgnoreCase(id)) {
+                current = current.getNext();
             }
-            return;
-        }
-
-        // Recorremos la lista hasta encontrar el elemento que deseamos eliminar
-        NodeDE current = head.getNext();
-        while (current != null) {
-            if (current.getData().getId().equals(id)) {
-                // Si el elemento se encuentra en otra posición que no sea cabeza
-                // A mi previo le digo que tome a mi siguiente, a mi siguiente le digo que tome mi previo
-                current.getPrev().setNext(current.getNext());
-                if (current.getNext() != null) {
-                    current.getNext().setPrev(current.getPrev());
+            if (current == null) {
+                return null;
+            } else {
+                Pet petToDelete = current.getData();
+                if (current.getPrev() == null) {
+                    head = current.getNext();
+                    if (head != null) {
+                        head.setPrev(null);
+                    }
                 } else {
-                    // Si el elemento es el último
-                    // Parado en el elemento que voy a eliminar, si su siguiente es nulo significa que es el último elemento de la lista
-                    // Y el previo de elemento lo suelto, y mi previo lo vuelvo nulo
-                    current.getPrev().setNext(null);
-                    current.setPrev(null);
+                    current.getPrev().setNext(current.getNext());
+                    if (current.getNext() != null) {
+                        current.getNext().setPrev(current.getPrev());
+                    }
                 }
-                return;
+                // Verificar si petToDelete es null antes de intentar llamar a setId()
+                if (petToDelete != null) {
+                    petToDelete.setId(null);
+                }
+                return petToDelete;
             }
-            current = current.getNext();
         }
     }
+
+
 
 
     public void deletePetById(String id) {
@@ -265,36 +258,36 @@ public class ListDE {
             throw new IllegalArgumentException("El objeto no puede ser vacio");
         }
     }
-
-
     public void changeExtremes() {
-        if (head == null || head.getNext() == null) {
-            throw new NullPointerException("El objeto no puede ser vacio");
+        try {
+            if (head != null && head.getNext() != null) {
+                List<Pet> copyList = new ArrayList<>();
+                NodeDE current = head;
+                while (current != null) {
+                    copyList.add(current.getData());
+                    current = current.getNext();
+                }
+
+                // Intercambiar los datos de los nodos extremos
+                Pet tempData = copyList.get(0);
+                copyList.set(0, copyList.get(copyList.size()-1));
+                copyList.set(copyList.size()-1, tempData);
+
+                // Actualizar los datos en la lista original
+                current = head;
+                for (int i = 0; i < copyList.size(); i++) {
+                    current.setData(copyList.get(i));
+                    current = current.getNext();
+                }
+            } else {
+                throw new Exception("La lista tiene menos de 2 elementos.");
+            }
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
         }
-        NodeDE temp = head;
-        while (temp.getNext() != null) {
-            temp = temp.getNext();
-        }
-        // temp está en el último nodo
-        NodeDE tempPrev = temp.getPrev();
-        NodeDE tempNext = head.getNext();
-
-        // Actualizar el enlace previo del nodo temporal
-        tempPrev.setNext(null);
-        temp.setPrev(null);
-
-        // Actualizar enlaces del nodo de la cabeza
-        head.setNext(null);
-        head.setPrev(temp);
-        temp.setNext(head);
-
-        // Actualizar enlaces del nodo final
-        tempNext.setPrev(head);
-        tempPrev.setNext(temp);
-
-        // Actualizar la cabeza
-        head = temp;
     }
+
+
 
 
     public void gainPosition(String id, int position, ListDE listDE) {
@@ -468,7 +461,7 @@ public class ListDE {
             if (head != null) {
                 NodeDE temp = head;
                 while (temp != null) {
-                    if (temp.getData().getAge() == age) {
+                    if (temp.getData().getAge().equals(age)) {
                         report.updateQuantity(temp.getData().getAge(), temp.getData().getGender());
                     }
                     temp = temp.getNext();
