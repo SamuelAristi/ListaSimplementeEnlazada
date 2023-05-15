@@ -14,6 +14,7 @@ public class Pet {
     private char gender;
     private Owner owner;
     private Location location;
+    private Boolean status;
 
 
 }

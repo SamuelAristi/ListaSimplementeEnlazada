@@ -1,19 +1,13 @@
 package co.edu.umanizales.tdas.model;
 
-import co.edu.umanizales.tdas.controller.dto.KidDTO;
-import co.edu.umanizales.tdas.controller.dto.ReportAgeQuantityKidsDTO;
 import co.edu.umanizales.tdas.controller.dto.ReportKidsLocationDTO;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
-import jakarta.validation.ValidatorFactory;
 import lombok.Data;
 import lombok.Getter;
 
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Optional;
 
 @Data
 @Getter
@@ -403,24 +397,21 @@ public class ListSE {
             System.out.println("Error: Argumento nulo pasado al método.");
         }
     }
-
-    public void getReportKidsByAgeByGender(byte age, ReportAgeQuantityKidsDTO report) {
-        try {
-            if (this.head == null) {
-                throw new NullPointerException("Lista vacía");
-            }
-
-            Node temp = this.head;
-            while (temp != null) {
-                if (temp.getData().getAge() == age) {
-                    report.updateQuantity(temp.getData().getAge(), temp.getData().getGender());
-                }
-                temp = temp.getNext();
-            }
-
-        } catch (NullPointerException e) {
-            System.out.println("Error: " + e.getMessage());
+    public int informRangeByAge(int first, int last) throws IllegalArgumentException {
+        if (first < 0 || last < 0 || first > last) {
+            throw new IllegalArgumentException("Invalid age range");
         }
+        Node temp = head;
+        int count = 0;
+        while (temp != null){
+            if (temp.getData().getAge() >= first && temp.getData().getAge() <= last){
+                count ++;
+            }
+            temp = temp.getNext();
+        }
+        return count;
     }
+
+
 
 }

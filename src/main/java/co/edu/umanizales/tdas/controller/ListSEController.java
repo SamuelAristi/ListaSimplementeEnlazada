@@ -3,8 +3,10 @@ package co.edu.umanizales.tdas.controller;
 import co.edu.umanizales.tdas.controller.dto.*;
 import co.edu.umanizales.tdas.model.Kid;
 import co.edu.umanizales.tdas.model.Location;
+import co.edu.umanizales.tdas.model.Ranges;
 import co.edu.umanizales.tdas.service.ListSEService;
 import co.edu.umanizales.tdas.service.LocationService;
+import co.edu.umanizales.tdas.service.RangeService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,7 +15,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(path = "/listse")
@@ -22,6 +26,8 @@ public class  ListSEController {
     private ListSEService listSEService;
     @Autowired
     private LocationService locationService;
+    @Autowired
+    private RangeService rangeService;
 
     @GetMapping
     ResponseEntity<ResponseDTO> getKids() {
@@ -279,8 +285,6 @@ public class  ListSEController {
         }
     }
 
-
-
     @GetMapping(path = "/kidsbydepto")
     public ResponseEntity<ResponseDTO> getKidsByDeptoCode() {
         try {
@@ -314,22 +318,29 @@ public class  ListSEController {
                     null), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @GetMapping(path = "reportsagekids/{age}")
-    public ResponseEntity<ResponseDTO> getReportsKidsByAgeGender(@PathVariable byte age) {
+
+    @GetMapping(path = "/rangeage")
+    public ResponseEntity<ResponseDTO> informRangeByAge() {
         try {
-            ReportAgeQuantityKidsDTO report = new ReportAgeQuantityKidsDTO(listSEService.getKids().getKids());
-            listSEService.getKids().getReportKidsByAgeByGender(age, report);
-            return new ResponseEntity<>(new ResponseDTO(200, report, null), HttpStatus.OK);
-        } catch (IllegalArgumentException e) {
+            List<RangeDTO> kidsRangeList = new ArrayList<>();
+            for (Ranges i : rangeService.getRanges()) {
+                int quantity = listSEService.getKids().informRangeByAge(i.getFrom(), i.getTo());
+                kidsRangeList.add(new RangeDTO(i, quantity));
+            }
             return new ResponseEntity<>(new ResponseDTO(
-                    404, "No hay niños registrados con la edad ingresada",
-                    null), HttpStatus.BAD_REQUEST);
+                    200, "El rango de los niños es: " + kidsRangeList, null), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(new ResponseDTO(
-                    500, "Ocurrió un error al generar el reporte",
-                    null), HttpStatus.INTERNAL_SERVER_ERROR);
+                    500, "Error interno del servidor", null), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+
 }
+
+
+
+
+
+
 

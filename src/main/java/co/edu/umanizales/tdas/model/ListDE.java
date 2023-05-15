@@ -1,7 +1,6 @@
 package co.edu.umanizales.tdas.model;
 
 
-import co.edu.umanizales.tdas.controller.dto.ReportAgeQuantityPetsDTO;
 import co.edu.umanizales.tdas.controller.dto.ReportPetsLocationDTO;
 import lombok.Data;
 
@@ -455,22 +454,22 @@ public class ListDE {
             System.out.println("Se ha producido un error al generar el informe: " + e.getMessage());
         }
     }
-
-    public void getReportPetsByAgeByGender(byte age, ReportAgeQuantityPetsDTO report) {
-        try {
-            if (head != null) {
-                NodeDE temp = head;
-                while (temp != null) {
-                    if (temp.getData().getAge().equals(age)) {
-                        report.updateQuantity(temp.getData().getAge(), temp.getData().getGender());
-                    }
-                    temp = temp.getNext();
-                }
-            }
-        } catch (Exception e) {
-            System.out.println("Error obteniendo reporte: " + e.getMessage());
+    public int informRangeByAge(int first, int last) throws IllegalArgumentException {
+        if (first < 0 || last < 0 || first > last) {
+            throw new IllegalArgumentException("Invalid age range");
         }
+        NodeDE temp = head;
+        int count = 0;
+        while (temp != null){
+            if (temp.getData().getAge() >= first && temp.getData().getAge() <= last){
+                count ++;
+            }
+            temp = temp.getNext();
+        }
+        return count;
     }
+
+
 
 }
 
