@@ -301,13 +301,11 @@ public class ListDE {
                     temp = temp.getNext();
                     count++;
                 }
-
-                if (temp != null) {
                     int newPosition = position - count;
                     Pet listCopy = temp.getData();
                     listDE.deletePetById(temp.getData().getId());
                     listDE.addByPosition(listCopy, newPosition);
-                }
+
             }
         } catch (NullPointerException e) {
             throw new IllegalArgumentException("El objeto no puede ser vacio");

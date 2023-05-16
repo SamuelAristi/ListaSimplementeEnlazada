@@ -9,6 +9,9 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 
+import static org.apache.logging.log4j.ThreadContext.isEmpty;
+
+
 @Data
 @Getter
 public class ListSE {
@@ -70,10 +73,12 @@ public class ListSE {
 
     public void addToStart(Kid kid) {
         Node newNode = new Node(kid);
-        try {
+        if(head == null){
+             head=newNode;
+        }
+        else{
             newNode.setNext(head);
-        } catch (NullPointerException e) {
-            head = newNode;
+          head= newNode;
         }
         size++;
     }
@@ -232,7 +237,6 @@ public class ListSE {
             System.out.println("La lista está vacía.");
         }
     }
-
     public void gainPosition(String id, int position, ListSE listSE) {
         try {
             Node temp = this.head;
@@ -250,39 +254,56 @@ public class ListSE {
             int newPosition = position - count;
 
             if (newPosition < 1) {
-                throw new IllegalArgumentException("La nueva posición debe ser mayor o igual a 1.");
+                newPosition = 1; // Si la nueva posición es menor que 1, lo asignamos a 1 para insertar al principio
+            } else if (newPosition > size + 1) {
+                newPosition = size + 1; // Si la nueva posición es mayor que el tamaño de la lista más 1, lo asignamos al final
             }
 
             Kid listCopy = temp.getData();
-            this.deleteByIdentification(id);
+            listSE.deleteByIdentification(temp.getData().getIdentification());
             listSE.addByPosition(listCopy, newPosition);
         } catch (NullPointerException e) {
-            System.out.println("La lista está vacía.");
+            throw new IllegalStateException("La lista está vacía.");
         } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
+            throw new IllegalArgumentException(e.getMessage());
         }
     }
 
 
-    public void backPosition(String id, int position, ListSE listSE){
+
+
+    public void backPosition(String id, int position, ListSE listSE) {
         try {
             Node temp = this.head;
             int count = 1;
 
-            while (temp != null && ! temp.getData().getIdentification().equals(id)){
+            while (temp != null && !temp.getData().getIdentification().equals(id)) {
                 temp = temp.getNext();
-                count ++;
+                count++;
             }
-            int newPosition = position+count-1;
+
+            if (temp == null) {
+                throw new IllegalArgumentException("No se encontró un niño con la identificación especificada.");
+            }
+
+            int newPosition = position - count;
+
+            if (newPosition < 1) {
+                newPosition = 1; // Si la nueva posición es menor que 1, lo asignamos a 1 para insertar al principio
+            } else if (newPosition > size + 1) {
+                newPosition = size + 1; // Si la nueva posición es mayor que el tamaño de la lista más 1, lo asignamos al final
+            }
+
             Kid listCopy = temp.getData();
             listSE.deleteByIdentification(temp.getData().getIdentification());
-            listSE.addByPosition(listCopy , newPosition);
+            listSE.addByPosition(listCopy, newPosition);
         } catch (NullPointerException e) {
-            System.out.println("La lista está vacía o el nodo con la identificación especificada no existe.");
-        } catch (IndexOutOfBoundsException e) {
-            System.out.println("La posición especificada está fuera de los límites de la lista.");
+            throw new IllegalStateException("La lista está vacía.");
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(e.getMessage());
         }
     }
+
 
     public void orderBoysToStart() {
         try {
@@ -349,14 +370,17 @@ public class ListSE {
 
     public int getCountKidsByLocation(String code) {
         int count = 0;
-        try {
-            Node temp = this.head;
-            while (temp != null && !temp.getData().getLocation().getCode().equals(code)) {
-                temp = temp.getNext();
+        Node temp = head;
+        while (temp != null) {
+            try {
+                String cityCode = temp.getData().getLocation().getCode().substring(0, 8);
+                if (cityCode.equals(code)) {
+                    count++;
+                }
+            } catch (StringIndexOutOfBoundsException e) {
+
             }
-            count = temp != null ? 1 : 0;
-        } catch (NullPointerException e) {
-            System.out.println("Error: Argumento nulo pasado al método.");
+            temp = temp.getNext();
         }
         return count;
     }
@@ -412,6 +436,18 @@ public class ListSE {
         return count;
     }
 
+    public void changeToRound() {
+        if (head == null ) {
+            return;
+        }
+
+        Node temp = head;
+        while (temp.getNext() != null) {
+            temp = temp.getNext();
+        }
+
+        temp.setNext(head);
+    }
 
 
 }
